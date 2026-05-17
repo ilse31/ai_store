@@ -1,0 +1,234 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { cn } from "@/lib/utils";
+import { useCartStore } from "@/store/cart-store";
+import toast from "react-hot-toast";
+import type { Product } from "@/types/product";
+import { ADMIN_WA } from "@/data/admin-number";
+
+interface ProductDetailModalProps {
+  product: Product | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function ProductDetailModal({
+  product,
+  open,
+  onOpenChange,
+}: ProductDetailModalProps) {
+  const [imgIndex, setImgIndex] = useState(0);
+  const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
+  const { addItem, items, openCartToCheckout } = useCartStore();
+
+  if (!product) return null;
+
+  const handleClose = (v: boolean) => {
+    if (!v) {
+      setSelectedVariant(null);
+      setImgIndex(0);
+    }
+    onOpenChange(v);
+  };
+
+  const handleAddToCart = () => {
+    if (selectedVariant === null) return;
+    const variant = product.variants[selectedVariant];
+    const alreadyInCart = items.find(
+      (i) => i.productId === product.id && i.variantLabel === variant.label,
+    );
+    if (alreadyInCart) {
+      toast("Produk sudah ada di keranjang", { icon: "🛒" });
+      return;
+    }
+    addItem({
+      productId: product.id,
+      productName: product.name,
+      variantLabel: variant.label,
+      price: variant.price,
+    });
+    toast.success(`${product.name} ditambahkan ke keranjang`);
+    handleClose(false);
+  };
+
+  const handleDirectCheckout = () => {
+    if (selectedVariant === null) return;
+    const variant = product.variants[selectedVariant];
+    const alreadyInCart = items.find(
+      (i) => i.productId === product.id && i.variantLabel === variant.label,
+    );
+    if (!alreadyInCart) {
+      addItem({
+        productId: product.id,
+        productName: product.name,
+        variantLabel: variant.label,
+        price: variant.price,
+      });
+    }
+    handleClose(false);
+    openCartToCheckout();
+  };
+
+  const handleWhatsApp = () => {
+    if (selectedVariant === null) return;
+    const variant = product.variants[selectedVariant];
+    const message = `Halo, saya ingin menanyakan produk ${product.name} - variant ${variant.label}.`;
+    const url = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  };
+
+  const prevImg = () =>
+    setImgIndex(
+      (i) => (i - 1 + product.thumbnails.length) % product.thumbnails.length,
+    );
+  const nextImg = () => setImgIndex((i) => (i + 1) % product.thumbnails.length);
+
+  return (
+    <DialogPrimitive.Root open={open} onOpenChange={handleClose}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className='fixed inset-0 z-50 bg-black/80 data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0' />
+        <DialogPrimitive.Content
+          className='fixed left-1/2 top-1/2 z-50 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 border border-border bg-card duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95'
+          aria-describedby={undefined}
+        >
+          <DialogPrimitive.Title className='sr-only'>
+            {product.name}
+          </DialogPrimitive.Title>
+
+          {/* AI brand stripe at top */}
+          <div className='ai-stripe w-full' />
+
+          <div className='grid sm:grid-cols-2'>
+            {/* Left — thumbnail */}
+            <div className='relative aspect-square w-full overflow-hidden bg-muted sm:aspect-auto'>
+              <Image
+                src={product.thumbnails[imgIndex]}
+                alt={`${product.name} ${imgIndex + 1}`}
+                fill
+                className='object-cover'
+                sizes='400px'
+              />
+              {product.thumbnails.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImg}
+                    className='absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 p-1.5 text-white hover:bg-black/80'
+                    aria-label='Sebelumnya'
+                  >
+                    <ChevronLeft className='h-4 w-4' />
+                  </button>
+                  <button
+                    onClick={nextImg}
+                    className='absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 p-1.5 text-white hover:bg-black/80'
+                    aria-label='Berikutnya'
+                  >
+                    <ChevronRight className='h-4 w-4' />
+                  </button>
+                  <div className='absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1'>
+                    {product.thumbnails.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setImgIndex(i)}
+                        className={cn(
+                          "h-1 transition-all",
+                          i === imgIndex ? "w-6 bg-white" : "w-2 bg-white/40",
+                        )}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+              {product.badge && (
+                <div className='absolute left-0 top-0'>
+                  <span className='bg-(--accent) px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white'>
+                    {product.badge}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Right — details */}
+            <div className='flex flex-col p-6'>
+              <div className='flex items-start justify-between gap-2'>
+                <div>
+                  <p className='mb-1 text-[10px] font-bold uppercase tracking-[0.15em] text-(--accent)'>
+                    {product.category.replace("-", " ")}
+                  </p>
+                  <h2 className='font-condensed text-2xl uppercase leading-tight text-foreground'>
+                    {product.name}
+                  </h2>
+                </div>
+                <DialogPrimitive.Close className='shrink-0 p-1 text-muted-foreground hover:text-foreground'>
+                  <X className='h-4 w-4' />
+                </DialogPrimitive.Close>
+              </div>
+
+              <div className='my-4 h-px bg-border' />
+
+              <p className='text-sm font-light leading-relaxed text-muted-foreground'>
+                {product.description}
+              </p>
+
+              <div className='my-4 h-px bg-border' />
+
+              {/* Variant selector */}
+              <p className='mb-3 text-[10px] font-bold uppercase tracking-[0.15em] text-foreground'>
+                Pilih Paket
+              </p>
+              <div className='flex flex-wrap gap-2'>
+                {product.variants.map((v, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedVariant(i)}
+                    className={cn(
+                      "border px-3 py-2 text-left text-xs transition-colors",
+                      selectedVariant === i
+                        ? "border-foreground bg-foreground text-background"
+                        : "border-border bg-transparent text-foreground hover:border-foreground",
+                    )}
+                  >
+                    <span className='block font-semibold uppercase tracking-wider'>
+                      {v.label}
+                    </span>
+                    <span className='font-light text-inherit opacity-70'>
+                      Rp {v.price.toLocaleString("id-ID")}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              {/* CTA buttons */}
+              <div className='mt-6 flex flex-col gap-2'>
+                <button
+                  className='w-full border border-foreground bg-foreground py-3 text-xs font-bold uppercase tracking-[0.15em] text-background transition-colors hover:bg-transparent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30'
+                  disabled={selectedVariant === null}
+                  onClick={handleDirectCheckout}
+                >
+                  Checkout Langsung
+                </button>
+                <button
+                  className='w-full border border-border bg-transparent py-3 text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:opacity-30'
+                  disabled={selectedVariant === null}
+                  onClick={handleAddToCart}
+                >
+                  Tambah ke Keranjang
+                </button>
+                <button
+                  className='w-full border border-border bg-transparent py-3 text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:opacity-30'
+                  disabled={selectedVariant === null}
+                  onClick={handleWhatsApp}
+                >
+                  Tanya Admin
+                </button>
+              </div>
+            </div>
+          </div>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  );
+}

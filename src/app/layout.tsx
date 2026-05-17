@@ -1,13 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Barlow, Barlow_Condensed, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Toaster } from "@/components/toaster";
+import { AosInit } from "@/components/aos-init";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const barlow = Barlow({
+  variable: "--font-barlow",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-barlow-condensed",
+  subsets: ["latin"],
+  weight: ["700"],
 });
 
 const geistMono = Geist_Mono({
@@ -16,8 +23,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Next.js Base Template",
-  description: "Next.js · Tailwind CSS · React Hook Form · Axios · Zustand · Immer · Radix UI",
+  title: "AI Store — Premium AI Tools Terpercaya",
+  description:
+    "Belanja produk digital AI terbaik. ChatGPT, Claude, Midjourney, dan lainnya. Proses cepat, support ramah.",
 };
 
 export default function RootLayout({
@@ -26,9 +34,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      {/* Anti-FOUC: apply theme class before first paint */}
+    <html lang="id" suppressHydrationWarning>
       <head>
+        {/* Anti-FOUC: apply dark class before first paint */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');var dark=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(dark)document.documentElement.classList.add('dark')}catch(e){}})()`,
@@ -36,25 +44,11 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${barlow.variable} ${barlowCondensed.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider>
-          {/* Navbar */}
-          <header className="fixed inset-x-0 top-0 z-50 flex h-14 items-center border-b border-border bg-background/80 px-6 backdrop-blur-md">
-            <div className="mx-auto flex w-full max-w-2xl items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-primary" />
-                <span className="text-sm font-semibold text-foreground">
-                  Next.js Starter
-                </span>
-              </div>
-              <ThemeToggle />
-            </div>
-          </header>
-
-          {/* Page content — offset by navbar height */}
-          <div className="pt-14">{children}</div>
-
+          <AosInit />
+          {children}
           <Toaster />
         </ThemeProvider>
       </body>

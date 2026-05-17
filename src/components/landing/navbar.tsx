@@ -1,0 +1,56 @@
+"use client";
+
+import { ShoppingCart } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useCartStore } from "@/store/cart-store";
+
+const navLinks = [
+  { label: "Beranda", href: "#hero" },
+  { label: "Cara Beli", href: "#cara-beli" },
+  { label: "Katalog", href: "#katalog" },
+];
+
+export function Navbar() {
+  const { items, openCart } = useCartStore();
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        {/* Logo */}
+        <span className="font-condensed text-xl tracking-[0.08em] text-foreground">
+          AI STORE
+        </span>
+
+        {/* Desktop nav links */}
+        <nav className="hidden gap-8 md:flex">
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* Right side */}
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <button
+            onClick={openCart}
+            className="relative flex h-10 items-center gap-2 border border-border bg-transparent px-4 text-xs font-semibold uppercase tracking-[0.12em] text-foreground transition-colors hover:border-foreground"
+          >
+            <ShoppingCart className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Keranjang</span>
+            {items.length > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center bg-(--accent) text-[10px] font-bold text-white">
+                {items.length}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
