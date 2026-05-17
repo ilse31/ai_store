@@ -73,12 +73,11 @@ export function ProductDetailModal({
     openCartToCheckout();
   };
 
-  const handleWhatsApp = () => {
-    if (selectedVariant === null) return;
+  const getWhatsAppUrl = () => {
+    if (selectedVariant === null) return null;
     const variant = product.variants[selectedVariant];
     const message = `Halo, saya ingin menanyakan produk ${product.name} - variant ${variant.label}.`;
-    const url = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank");
+    return `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(message)}`;
   };
 
   const prevImg = () =>
@@ -217,13 +216,18 @@ export function ProductDetailModal({
                 >
                   Tambah ke Keranjang
                 </button>
-                <button
-                  className='w-full border border-border bg-transparent py-3 text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:opacity-30'
-                  disabled={selectedVariant === null}
-                  onClick={handleWhatsApp}
+                <a
+                  href={getWhatsAppUrl() ?? undefined}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  aria-disabled={selectedVariant === null}
+                  className={cn(
+                    "block w-full border border-border bg-transparent py-3 text-center text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:border-foreground",
+                    selectedVariant === null && "pointer-events-none opacity-30",
+                  )}
                 >
                   Tanya Admin
-                </button>
+                </a>
               </div>
             </div>
           </div>

@@ -763,15 +763,15 @@ function InvoiceView() {
       </div>
 
       <div className='border-t border-border px-5 py-5 space-y-2'>
-        <button
+        <a
+          href={`https://wa.me/${ADMIN_WA}?text=${waMessage}`}
+          target='_blank'
+          rel='noopener noreferrer'
           className='flex w-full items-center justify-center gap-2 border border-foreground bg-transparent py-3 text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:bg-foreground hover:text-background'
-          onClick={() =>
-            window.open(`https://wa.me/${ADMIN_WA}?text=${waMessage}`, "_blank")
-          }
         >
           <MessageCircle className='h-5 w-5' />
           Konfirmasi via WhatsApp
-        </button>
+        </a>
         <button
           className='flex w-full items-center justify-center gap-2 bg-transparent py-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-foreground'
           onClick={backToCart}

@@ -31,7 +31,8 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
     label: "BCA",
     type: "bank-transfer",
     typeLabel: "Transfer",
-    logoSrc: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg",
     bankDetails: {
       bankFullName: "Bank Central Asia (BCA)",
       accountNumber: "0980240754",
@@ -53,7 +54,8 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
     label: "Mandiri",
     type: "bank-transfer",
     typeLabel: "Transfer",
-    logoSrc: "https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg",
     bankDetails: {
       bankFullName: "Bank Mandiri",
       accountNumber: "1090020123456",
@@ -75,7 +77,7 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
     label: "SeaBank",
     type: "bank-transfer",
     typeLabel: "Transfer",
-    logoSrc: "https://toko-homeai.pro/images/seabank.png",
+    logoSrc: "https://upload.wikimedia.org/wikipedia/commons/a/ac/SeaBank.svg",
     bankDetails: {
       bankFullName: "SeaBank Indonesia",
       accountNumber: "901234567890",
@@ -97,7 +99,8 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
     label: "OVO",
     type: "e-wallet",
     typeLabel: "E-Wallet",
-    logoSrc: "https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo_ovo_purple.svg",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo_ovo_purple.svg",
     walletDetails: {
       phoneNumber: "081234567890",
       accountName: "Heri Yulianto",
@@ -117,7 +120,8 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
     label: "DANA",
     type: "e-wallet",
     typeLabel: "E-Wallet",
-    logoSrc: "https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg",
     walletDetails: {
       phoneNumber: "081234567890",
       accountName: "Heri Yulianto",
@@ -137,7 +141,8 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
     label: "GoPay",
     type: "e-wallet",
     typeLabel: "E-Wallet",
-    logoSrc: "https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg",
     walletDetails: {
       phoneNumber: "081234567890",
       accountName: "Heri Yulianto",
@@ -177,7 +182,8 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
     label: "QRIS",
     type: "qris",
     typeLabel: "Scan QR",
-    logoSrc: "https://upload.wikimedia.org/wikipedia/commons/e/e0/QRIS_Logo.svg",
+    logoSrc:
+      "https://upload.wikimedia.org/wikipedia/commons/e/e0/QRIS_Logo.svg",
     // Ganti dengan URL gambar QRIS asli
     qrisImageSrc: null,
   },
