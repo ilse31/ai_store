@@ -1,16 +1,21 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, forwardRef } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { toPng } from "html-to-image";
 import {
   AlertTriangle,
   ArrowLeft,
+  Camera,
   Check,
   ClipboardList,
   CreditCard,
+  Download,
   FolderOpen,
+  Loader2,
   MessageCircle,
   Receipt,
+  Share2,
   Smartphone,
   Trash2,
   Upload,
@@ -633,12 +638,155 @@ function CartView() {
   );
 }
 
+// ── Invoice share image component (hidden, for capture) ───────────────────────
+
+interface InvoiceShareImageProps {
+  invoiceNumber: string | null;
+  invoiceTime: string | null;
+  buyerName: string;
+  buyerWhatsapp: string;
+  buyerEmail?: string;
+  paymentMethodLabel: string;
+  items: Array<{
+    productName: string;
+    variantLabel: string;
+    price: number;
+  }>;
+  total: number;
+}
+
+const InvoiceShareImage = forwardRef<HTMLDivElement, InvoiceShareImageProps>(
+  function InvoiceShareImage(
+    {
+      invoiceNumber,
+      invoiceTime,
+      buyerName,
+      buyerWhatsapp,
+      buyerEmail,
+      paymentMethodLabel,
+      items,
+      total,
+    },
+    ref,
+  ) {
+    return (
+      <div
+        ref={ref}
+        className="w-[400px] bg-[#0a0a0a] p-6 text-white"
+        style={{ fontFamily: "system-ui, sans-serif" }}
+      >
+        {/* Header */}
+        <div className="mb-6 border-b border-white/20 pb-4">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
+            Home AI Official
+          </p>
+          <p className="mt-2 text-xs font-light text-white/80">
+            Premium AI Tool Subscription Store
+          </p>
+        </div>
+
+        {/* Invoice Number */}
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/60">
+              Invoice
+            </p>
+            <p className="font-mono text-sm font-semibold text-white">
+              {invoiceNumber}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/60">
+              Tanggal
+            </p>
+            <p className="text-xs font-light text-white">{invoiceTime}</p>
+          </div>
+        </div>
+
+        {/* Buyer Info */}
+        <div className="mb-5 border-y border-white/20 py-4">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white/60">
+            Pembeli
+          </p>
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs">
+              <span className="text-white/60">Nama</span>
+              <span className="font-semibold text-white">{buyerName}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-white/60">WhatsApp</span>
+              <span className="font-semibold text-white">{buyerWhatsapp}</span>
+            </div>
+            {buyerEmail && (
+              <div className="flex justify-between text-xs">
+                <span className="text-white/60">Email</span>
+                <span className="font-semibold text-white">{buyerEmail}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-xs">
+              <span className="text-white/60">Pembayaran</span>
+              <span className="font-semibold text-white">
+                {paymentMethodLabel}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Items */}
+        <div className="mb-5">
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.15em] text-white/60">
+            Detail Pesanan
+          </p>
+          <div className="space-y-2">
+            {items.map((item, i) => (
+              <div key={i} className="flex items-start justify-between text-xs">
+                <div className="flex-1 pr-2">
+                  <p className="font-semibold text-white">{item.productName}</p>
+                  <p className="text-white/60">{item.variantLabel}</p>
+                </div>
+                <span className="shrink-0 font-semibold text-white">
+                  {formatRupiah(item.price)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Total */}
+        <div className="mb-6 border-t border-white/20 pt-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-[0.12em] text-white">
+              Total Bayar
+            </span>
+            <span className="text-xl font-bold text-white">
+              {formatRupiah(total)}
+            </span>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-white/20 pt-4 text-center">
+          <p className="text-[10px] font-light text-white/50">
+            Konfirmasi pembayaran via WhatsApp admin
+          </p>
+          <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/70">
+            Home AI Official © 2025
+          </p>
+        </div>
+      </div>
+    );
+  },
+);
+
 // ── Invoice view ──────────────────────────────────────────────────────────────
 
 function InvoiceView() {
   const { items, invoiceNumber, invoiceTime, buyerInfo, backToCart } =
     useCartStore();
   const total = items.reduce((sum, item) => sum + item.price, 0);
+  const invoiceRef = useRef<HTMLDivElement>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [captureError, setCaptureError] = useState<string | null>(null);
 
   const waMessage = encodeURIComponent(
     [
@@ -657,6 +805,75 @@ function InvoiceView() {
       `Saya akan kirim screenshot invoice/pesanan + bukti pembayaran setelah ini. Terima kasih.`,
     ].join("\n"),
   );
+
+  const captureInvoice = useCallback(async () => {
+    if (!invoiceRef.current) return;
+
+    setIsCapturing(true);
+    setCaptureError(null);
+
+    try {
+      const dataUrl = await toPng(invoiceRef.current, {
+        quality: 0.95,
+        pixelRatio: 2,
+        backgroundColor: "#0a0a0a",
+      });
+
+      // Convert data URL to blob
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const file = new File([blob], `invoice-${invoiceNumber}.png`, {
+        type: "image/png",
+      });
+
+      // Check if Web Share API is available
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: `Invoice ${invoiceNumber}`,
+          text: `Invoice pembelian Home AI Official - ${invoiceNumber}`,
+          files: [file],
+        });
+      } else {
+        // Fallback: download the image
+        const link = document.createElement("a");
+        link.download = `invoice-${invoiceNumber}.png`;
+        link.href = dataUrl;
+        link.click();
+      }
+    } catch (err) {
+      console.error("Failed to capture invoice:", err);
+      setCaptureError(
+        "Gagal menangkap invoice. Coba download sebagai gambar.",
+      );
+    } finally {
+      setIsCapturing(false);
+    }
+  }, [invoiceNumber]);
+
+  const downloadInvoice = useCallback(async () => {
+    if (!invoiceRef.current) return;
+
+    setIsCapturing(true);
+    setCaptureError(null);
+
+    try {
+      const dataUrl = await toPng(invoiceRef.current, {
+        quality: 0.95,
+        pixelRatio: 2,
+        backgroundColor: "#0a0a0a",
+      });
+
+      const link = document.createElement("a");
+      link.download = `invoice-${invoiceNumber}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to download invoice:", err);
+      setCaptureError("Gagal mengunduh invoice. Coba lagi.");
+    } finally {
+      setIsCapturing(false);
+    }
+  }, [invoiceNumber]);
 
   return (
     <div className='flex h-full flex-col'>
@@ -760,6 +977,46 @@ function InvoiceView() {
             {formatRupiah(total)}
           </span>
         </div>
+
+        {/* Capture/Share actions */}
+        <div className='mt-6 space-y-3'>
+          {captureError && (
+            <p className='text-center text-[10px] text-destructive'>
+              {captureError}
+            </p>
+          )}
+
+          <div className='flex gap-2'>
+            <button
+              onClick={captureInvoice}
+              disabled={isCapturing}
+              className='flex flex-1 items-center justify-center gap-1.5 border border-(--accent) bg-transparent py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-(--accent) transition-colors hover:bg-(--accent) hover:text-white disabled:cursor-not-allowed disabled:opacity-50'
+            >
+              {isCapturing ? (
+                <Loader2 className='h-4 w-4 animate-spin' />
+              ) : (
+                <Share2 className='h-4 w-4' />
+              )}
+              Share
+            </button>
+            <button
+              onClick={downloadInvoice}
+              disabled={isCapturing}
+              className='flex flex-1 items-center justify-center gap-1.5 border border-border bg-transparent py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-foreground transition-colors hover:border-foreground disabled:cursor-not-allowed disabled:opacity-50'
+            >
+              {isCapturing ? (
+                <Loader2 className='h-4 w-4 animate-spin' />
+              ) : (
+                <Download className='h-4 w-4' />
+              )}
+              Download
+            </button>
+          </div>
+
+          <p className='text-center text-[10px] font-light text-muted-foreground'>
+            Share invoice sebagai gambar ke WhatsApp atau simpan ke galeri
+          </p>
+        </div>
       </div>
 
       <div className='border-t border-border px-5 py-5 space-y-2'>
@@ -779,6 +1036,23 @@ function InvoiceView() {
           <ArrowLeft className='h-5 w-5' />
           Kembali ke Keranjang
         </button>
+      </div>
+
+      {/* Hidden invoice image for capture */}
+      <div className='fixed left-[-9999px] top-[-9999px] opacity-0 pointer-events-none'>
+        {buyerInfo && invoiceTime && (
+          <InvoiceShareImage
+            ref={invoiceRef}
+            invoiceNumber={invoiceNumber}
+            invoiceTime={invoiceTime}
+            buyerName={buyerInfo.name}
+            buyerWhatsapp={buyerInfo.whatsapp}
+            buyerEmail={buyerInfo.email}
+            paymentMethodLabel={buyerInfo.paymentMethodLabel}
+            items={items}
+            total={total}
+          />
+        )}
       </div>
     </div>
   );
