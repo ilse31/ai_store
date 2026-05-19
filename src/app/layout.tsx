@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Barlow, Barlow_Condensed, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -115,22 +116,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <head>
+      <body
+        className={`${barlow.variable} ${barlowCondensed.variable} ${geistMono.variable} antialiased`}
+      >
         {/* Anti-FOUC: apply dark class before first paint */}
-        <script
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');var dark=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(dark)document.documentElement.classList.add('dark')}catch(e){}})()`,
           }}
         />
         {/* JSON-LD structured data */}
-        <script
+        <Script
+          id="json-ld"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-      </head>
-      <body
-        className={`${barlow.variable} ${barlowCondensed.variable} ${geistMono.variable} antialiased`}
-      >
         <ThemeProvider>
           <AosInit />
           {children}
