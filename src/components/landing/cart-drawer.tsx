@@ -6,7 +6,6 @@ import { toPng } from "html-to-image";
 import {
   AlertTriangle,
   ArrowLeft,
-  Camera,
   Check,
   ClipboardList,
   CreditCard,
@@ -26,7 +25,6 @@ import { useCartStore } from "@/store/cart-store";
 import type { CartItem, BuyerInfo } from "@/store/cart-store";
 import { PAYMENT_METHODS } from "@/data/payment-methods";
 import type { PaymentMethod } from "@/data/payment-methods";
-import { ADMIN_WA } from "@/data/admin-number";
 
 function formatRupiah(n: number) {
   return `Rp ${n.toLocaleString("id-ID")}`;
@@ -780,7 +778,7 @@ const InvoiceShareImage = forwardRef<HTMLDivElement, InvoiceShareImageProps>(
 
 // ── Invoice view ──────────────────────────────────────────────────────────────
 
-function InvoiceView() {
+function InvoiceView({ adminWhatsapp }: { adminWhatsapp: string }) {
   const { items, invoiceNumber, invoiceTime, buyerInfo, backToCart } =
     useCartStore();
   const total = items.reduce((sum, item) => sum + item.price, 0);
@@ -1021,7 +1019,7 @@ function InvoiceView() {
 
       <div className='border-t border-border px-5 py-5 space-y-2'>
         <a
-          href={`https://wa.me/${ADMIN_WA}?text=${waMessage}`}
+          href={`https://wa.me/${adminWhatsapp}?text=${waMessage}`}
           target='_blank'
           rel='noopener noreferrer'
           className='flex w-full items-center justify-center gap-2 border border-foreground bg-transparent py-3 text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:bg-foreground hover:text-background'
@@ -1060,7 +1058,7 @@ function InvoiceView() {
 
 // ── Root drawer ───────────────────────────────────────────────────────────────
 
-export function CartDrawer() {
+export function CartDrawer({ adminWhatsapp = "6289530571642" }: { adminWhatsapp?: string }) {
   const { isOpen, view, closeCart } = useCartStore();
 
   return (
@@ -1080,7 +1078,7 @@ export function CartDrawer() {
             Keranjang Belanja
           </DialogPrimitive.Title>
           {view === "invoice" ? (
-            <InvoiceView />
+            <InvoiceView adminWhatsapp={adminWhatsapp} />
           ) : view === "checkout" ? (
             <CheckoutFormView />
           ) : (

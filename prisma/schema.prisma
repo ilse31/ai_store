@@ -1,0 +1,92 @@
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SiteSettings {
+  id            Int    @id @default(1)
+  siteName      String @default("AI Store")
+  footerTagline String @default("Premium AI Tools Terpercaya · Proses Cepat · Support Ramah")
+  adminWhatsapp String @default("6289530571642")
+}
+
+model HeroContent {
+  id        Int    @id @default(1)
+  eyebrow   String @default("Premium AI Tools")
+  headline1 String @default("Terpercaya.")
+  headline2 String @default("Proses Cepat.")
+  headline3 String @default("Support Ramah.")
+  subcopy   String @default("Belanja produk digital dengan tampilan lebih rapi, harga jelas, dan alur checkout yang mudah seperti marketplace.")
+  alurText  String @default("checkout → invoice muncul → screenshot → konfirmasi WhatsApp admin")
+  ctaLabel  String @default("Lihat Katalog")
+}
+
+model SpecCell {
+  id    Int    @id @default(autoincrement())
+  order Int    @default(0)
+  value String
+  unit  String
+  label String
+  note  String
+}
+
+model Product {
+  id          String             @id @default(cuid())
+  name        String
+  slug        String             @unique
+  category    String
+  badge       String?
+  description String
+  order       Int                @default(0)
+  thumbnails  ProductThumbnail[]
+  variants    ProductVariant[]
+}
+
+model ProductThumbnail {
+  id        Int     @id @default(autoincrement())
+  url       String
+  order     Int     @default(0)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+}
+
+model ProductVariant {
+  id        Int     @id @default(autoincrement())
+  label     String
+  price     Int
+  order     Int     @default(0)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+}
+
+model PaymentMethod {
+  id            String        @id
+  label         String
+  type          String
+  typeLabel     String
+  logoSrc       String
+  order         Int           @default(0)
+  accountHolder String?
+  accountNumber String?
+  accountType   String?
+  bankFullName  String?
+  phoneNumber   String?
+  accountName   String?
+  qrisImageSrc  String?
+  steps         PaymentStep[]
+}
+
+model PaymentStep {
+  id              Int           @id @default(autoincrement())
+  order           Int           @default(0)
+  text            String
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Cascade)
+  paymentMethodId String
+}

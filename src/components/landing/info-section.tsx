@@ -1,28 +1,13 @@
-const specs = [
-  {
-    value: "08.00 – 22.00",
-    unit: "WIB",
-    label: "Jam Operasional",
-    note: "Konfirmasi & cek pembayaran diproses admin pada jam operasional.",
-  },
-  {
-    value: "< 1 JAM",
-    unit: "AKTIVASI",
-    label: "Proses Cepat",
-    note: "Produk diaktivasi dalam waktu kurang dari 1 jam setelah pembayaran dikonfirmasi.",
-  },
-  {
-    value: "10+",
-    unit: "PRODUK",
-    label: "AI Tools Premium",
-    note: "ChatGPT, Claude, Midjourney, GitHub Copilot, Canva Pro, dan masih banyak lagi.",
-  },
-];
+import { prisma } from "@/lib/prisma";
 
-export function InfoSection() {
+export async function InfoSection() {
+  const specs = await prisma.specCell.findMany({
+    orderBy: { order: "asc" },
+  });
+
   return (
     <section id="cara-beli" className="bg-background">
-      {/* AI brand stripe divider — used sparingly like M-stripe */}
+      {/* AI brand stripe divider */}
       <div className="ai-stripe w-full" />
 
       <div className="mx-auto max-w-7xl px-6 py-16 sm:py-20">
@@ -34,16 +19,15 @@ export function InfoSection() {
           Mengapa AI Store
         </p>
 
-        {/* Spec cells — BMW M spec-cell treatment */}
+        {/* Spec cells */}
         <div className="grid grid-cols-1 gap-px border border-border bg-border sm:grid-cols-3">
           {specs.map((spec, i) => (
             <div
-              key={i}
+              key={spec.id}
               data-aos="fade-up"
               data-aos-delay={i * 100}
               className="flex flex-col justify-between bg-card p-8"
             >
-              {/* Value — display-sm treatment */}
               <div>
                 <p className="font-condensed text-[clamp(2rem,4vw,3rem)] leading-none text-foreground">
                   {spec.value}
@@ -53,7 +37,6 @@ export function InfoSection() {
                 </p>
               </div>
 
-              {/* Label + note — label-uppercase + body-sm */}
               <div className="mt-6">
                 <p className="text-xs font-bold uppercase tracking-[0.12em] text-foreground">
                   {spec.label}

@@ -10,15 +10,15 @@ const navLinks = [
   { label: "Katalog", href: "#katalog" },
 ];
 
-export function Navbar() {
+export function Navbar({ siteName = "AI STORE" }: { siteName?: string }) {
   const { items, openCart } = useCartStore();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         {/* Logo */}
-        <span className="font-condensed text-xl tracking-[0.08em] text-foreground">
-          AI STORE
+        <span className="font-condensed text-xl tracking-[0.08em] text-foreground uppercase">
+          {siteName}
         </span>
 
         {/* Desktop nav links */}
