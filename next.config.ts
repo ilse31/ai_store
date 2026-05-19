@@ -4,9 +4,8 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
     remotePatterns: [
-      { hostname: "picsum.photos" },
-      { hostname: "upload.wikimedia.org" },
-      { hostname: "toko-homeai.pro" },
+      { protocol: "https", hostname: "**" },
+      { protocol: "http", hostname: "**" },
     ],
   },
 };
