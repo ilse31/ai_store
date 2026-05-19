@@ -160,6 +160,13 @@ export function ProductDetailModal({
                   <h2 className='font-condensed text-2xl uppercase leading-tight text-foreground'>
                     {product.name}
                   </h2>
+                  <div className='mt-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground'>
+                    <span className='flex items-center gap-1'>
+                      ⭐ {product.rating}
+                    </span>
+                    <span>•</span>
+                    <span>{product.sold} Terjual</span>
+                  </div>
                 </div>
                 <DialogPrimitive.Close className='shrink-0 p-1 text-muted-foreground hover:text-foreground'>
                   <X className='h-4 w-4' />

@@ -36,6 +36,8 @@ function toProduct(p: CmsProduct): Product {
     category: p.category as Product["category"],
     badge: p.badge ?? undefined,
     description: p.description,
+    sold: p.sold,
+    rating: p.rating,
     thumbnails: p.thumbnails.map((t) => t.url),
     variants: p.variants.map((v) => ({ label: v.label, price: v.price })),
   };

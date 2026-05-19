@@ -45,6 +45,15 @@ export function ProductCard({ product, onViewDetail }: ProductCardProps) {
           {product.name}
         </h3>
 
+        {/* Rating and Sold */}
+        <div className="mt-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+          <span className="flex items-center gap-1">
+            ⭐ {product.rating}
+          </span>
+          <span>•</span>
+          <span>{product.sold} Terjual</span>
+        </div>
+
         {/* Price */}
         <div className="mt-auto pt-4">
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">

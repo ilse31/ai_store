@@ -22,6 +22,8 @@ export interface CmsProduct {
   badge: string | null;
   description: string;
   order: number;
+  sold: number;
+  rating: number;
   thumbnails: CmsThumbnail[];
   variants: CmsVariant[];
 }

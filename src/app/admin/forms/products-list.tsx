@@ -14,6 +14,8 @@ type Product = {
   badge: string | null;
   description: string;
   order: number;
+  sold: number;
+  rating: number;
   variants: Variant[];
   thumbnails: Thumbnail[];
 };
@@ -31,6 +33,8 @@ export function ProductsList() {
   const [category, setCategory] = useState("semua");
   const [badge, setBadge] = useState("");
   const [description, setDescription] = useState("");
+  const [sold, setSold] = useState(0);
+  const [rating, setRating] = useState(5.0);
   const [thumbnails, setThumbnails] = useState<string[]>([]);
   const [variants, setVariants] = useState<Variant[]>([]);
 
@@ -55,6 +59,8 @@ export function ProductsList() {
     setCategory("semua");
     setBadge("");
     setDescription("");
+    setSold(0);
+    setRating(5.0);
     setThumbnails([]);
     setVariants([]);
   };
@@ -71,6 +77,8 @@ export function ProductsList() {
     setCategory(p.category);
     setBadge(p.badge || "");
     setDescription(p.description);
+    setSold(p.sold);
+    setRating(p.rating);
     setThumbnails(p.thumbnails.map(t => t.url));
     setVariants(p.variants.map(v => ({ label: v.label, price: v.price })));
     setIsModalOpen(true);
@@ -97,6 +105,8 @@ export function ProductsList() {
     const body = {
       name, slug, category, description,
       badge: badge || null,
+      sold,
+      rating,
       thumbnails,
       variants,
     };
@@ -184,6 +194,17 @@ export function ProductsList() {
                 <div>
                   <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.15em] text-foreground">Badge (Opsional)</label>
                   <input type="text" value={badge} onChange={e => setBadge(e.target.value)} className="h-10 w-full border border-border bg-transparent px-3 text-xs text-foreground focus:border-foreground focus:outline-none" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.15em] text-foreground">Terjual</label>
+                  <input type="number" value={sold} onChange={e => setSold(Number(e.target.value))} className="h-10 w-full border border-border bg-transparent px-3 text-xs text-foreground focus:border-foreground focus:outline-none" required />
+                </div>
+                <div>
+                  <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.15em] text-foreground">Rating</label>
+                  <input type="number" step="0.1" min="0" max="5" value={rating} onChange={e => setRating(Number(e.target.value))} className="h-10 w-full border border-border bg-transparent px-3 text-xs text-foreground focus:border-foreground focus:outline-none" required />
                 </div>
               </div>
 
