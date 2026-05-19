@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -89,4 +89,32 @@ model PaymentStep {
   text            String
   paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Cascade)
   paymentMethodId String
+}
+
+model Order {
+  id               String      @id @default(cuid())
+  invoiceNumber    String      @unique
+  customerName     String
+  customerWhatsapp String
+  customerEmail    String?
+  totalAmount      Int
+  paymentMethod    String
+  paymentProofUrl  String?
+  telegramFileId   String?
+  status           String      @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  notes            String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  items            OrderItem[]
+}
+
+model OrderItem {
+  id           String @id @default(cuid())
+  orderId      String
+  order        Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String
+  productName  String
+  variantLabel String
+  price        Int
+  quantity     Int    @default(1)
 }

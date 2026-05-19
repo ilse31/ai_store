@@ -2,17 +2,20 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutDashboard, LogOut, Settings, List, CreditCard, Type, Image as ImageIcon } from "lucide-react";
+import { LayoutDashboard, LogOut, Settings, List, CreditCard, Type, Image as ImageIcon, ShoppingCart } from "lucide-react";
 import { SettingsForm } from "./forms/settings-form";
 import { HeroForm } from "./forms/hero-form";
 import { SpecsForm } from "./forms/specs-form";
 import { ProductsList } from "./forms/products-list";
 import { PaymentsList } from "./forms/payments-list";
+import { OrdersList } from "./forms/orders-list";
+import { AnalyticsDashboard } from "./forms/analytics-dashboard";
 
-type Tab = "dashboard" | "hero" | "specs" | "products" | "payments" | "settings";
+type Tab = "dashboard" | "orders" | "hero" | "specs" | "products" | "payments" | "settings";
 
 const TABS = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "orders", label: "Pesanan", icon: ShoppingCart },
   { id: "hero", label: "Hero Content", icon: Type },
   { id: "specs", label: "Fitur / Specs", icon: List },
   { id: "products", label: "Produk", icon: ImageIcon },
@@ -83,25 +86,13 @@ export function AdminDashboard() {
                 Selamat Datang, Admin.
               </h2>
               <p className="text-sm font-light text-muted-foreground mb-8">
-                Pilih menu di samping untuk mengubah konten website. Semua perubahan akan langsung terlihat di website tanpa perlu proses build ulang.
+                Pilih menu di samping untuk mengubah konten website. Berikut adalah ringkasan performa toko Anda.
               </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="border border-border p-6">
-                  <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground mb-2">Tips</h3>
-                  <p className="text-xs font-light text-foreground">
-                    Gunakan foto dengan rasio 1:1 untuk thumbnail produk agar terlihat rapi.
-                  </p>
-                </div>
-                <div className="border border-border p-6">
-                  <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground mb-2">Perhatian</h3>
-                  <p className="text-xs font-light text-foreground">
-                    Jangan lupa simpan (Save) setiap kali melakukan perubahan pada form.
-                  </p>
-                </div>
-              </div>
+              <AnalyticsDashboard />
             </div>
           )}
+          {activeTab === "orders" && <OrdersList />}
           {activeTab === "hero" && <HeroForm />}
           {activeTab === "specs" && <SpecsForm />}
           {activeTab === "products" && <ProductsList />}

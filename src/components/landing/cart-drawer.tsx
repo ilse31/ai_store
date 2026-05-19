@@ -262,6 +262,7 @@ function CheckoutFormView() {
   const [notes, setNotes] = useState("");
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -287,7 +288,7 @@ function CheckoutFormView() {
     setErrors((e) => ({ ...e, proof: "" }));
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const newErrors: Record<string, string> = {};
     if (!name.trim()) newErrors.name = "Nama wajib diisi";
     if (!wa.trim()) newErrors.wa = "Nomor WhatsApp wajib diisi";
@@ -302,18 +303,60 @@ function CheckoutFormView() {
       return;
     }
 
-    const pm = PAYMENT_METHODS.find((p) => p.id === paymentId)!;
-    console.log(pm);
-    const buyerInfo: BuyerInfo = {
-      name: name.trim(),
-      whatsapp: wa.trim(),
-      email: email.trim(),
-      paymentMethodId: paymentId!,
-      paymentMethodLabel: `${pm.label} ${pm.typeLabel}`,
-      notes: notes.trim(),
-      proofFileName: proofFile!.name,
-    };
-    goToInvoice(buyerInfo);
+    setIsSubmitting(true);
+    setErrors({});
+
+    try {
+      const pm = PAYMENT_METHODS.find((p) => p.id === paymentId)!;
+      
+      const orderData = {
+        invoiceNumber: `INV-${Date.now()}`,
+        customerName: name.trim(),
+        customerWhatsapp: wa.trim(),
+        customerEmail: email.trim(),
+        totalAmount: total,
+        paymentMethod: `${pm.label} ${pm.typeLabel}`,
+        notes: notes.trim(),
+        items: items.map(i => ({
+          productId: i.productId,
+          productName: i.productName,
+          variantLabel: i.variantLabel,
+          price: i.price,
+        }))
+      };
+
+      const formData = new FormData();
+      formData.append("proofFile", proofFile!);
+      formData.append("orderData", JSON.stringify(orderData));
+
+      const response = await fetch("/api/checkout/submit", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal memproses pesanan");
+      }
+
+      const buyerInfo: BuyerInfo = {
+        name: name.trim(),
+        whatsapp: wa.trim(),
+        email: email.trim(),
+        paymentMethodId: paymentId!,
+        paymentMethodLabel: `${pm.label} ${pm.typeLabel}`,
+        notes: notes.trim(),
+        proofFileName: proofFile!.name,
+      };
+      
+      // Update store state manually with the generated invoice
+      useCartStore.setState({ invoiceNumber: orderData.invoiceNumber });
+      goToInvoice(buyerInfo);
+    } catch (error) {
+      console.error(error);
+      setErrors({ proof: "Terjadi kesalahan saat memproses pesanan. Coba lagi." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -552,9 +595,17 @@ function CheckoutFormView() {
       <div className='border-t border-border px-5 py-5 space-y-2'>
         <button
           onClick={handleSubmit}
-          className='w-full border border-foreground bg-transparent py-3 text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:bg-foreground hover:text-background'
+          disabled={isSubmitting}
+          className='flex w-full items-center justify-center gap-2 border border-foreground bg-transparent py-3 text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:opacity-50'
         >
-          Buat Invoice
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Memproses...
+            </>
+          ) : (
+            "Buat Invoice"
+          )}
         </button>
         <button
           onClick={backToCart}
@@ -800,7 +851,7 @@ function InvoiceView({ adminWhatsapp }: { adminWhatsapp: string }) {
       `Metode: ${buyerInfo?.paymentMethodLabel ?? "-"}`,
       `Waktu: ${invoiceTime ?? "-"}`,
       ``,
-      `Saya akan kirim screenshot invoice/pesanan + bukti pembayaran setelah ini. Terima kasih.`,
+      `Bukti pembayaran telah saya lampirkan via sistem website. Silakan diproses. Terima kasih.`,
     ].join("\n"),
   );
 
