@@ -23,6 +23,8 @@ export function ProductDetailModal({
 }: ProductDetailModalProps) {
   const [imgIndex, setImgIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomOrigin, setZoomOrigin] = useState("center center");
   const { addItem, items, openCartToCheckout } = useCartStore();
 
   if (!product) return null;
@@ -31,6 +33,7 @@ export function ProductDetailModal({
     if (!v) {
       setSelectedVariant(null);
       setImgIndex(0);
+      setIsZoomed(false);
     }
     onOpenChange(v);
   };
@@ -80,11 +83,62 @@ export function ProductDetailModal({
     return `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(message)}`;
   };
 
-  const prevImg = () =>
+  const prevImg = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsZoomed(false);
     setImgIndex(
       (i) => (i - 1 + product.thumbnails.length) % product.thumbnails.length,
     );
-  const nextImg = () => setImgIndex((i) => (i + 1) % product.thumbnails.length);
+  };
+  
+  const nextImg = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsZoomed(false);
+    setImgIndex((i) => (i + 1) % product.thumbnails.length);
+  };
+
+  const updateZoomOrigin = (
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
+  ) => {
+    const container = e.currentTarget;
+    const rect = container.getBoundingClientRect();
+
+    let clientX = 0;
+    let clientY = 0;
+
+    if ("touches" in e) {
+      if (e.touches.length === 0) return;
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    const y = ((clientY - rect.top) / rect.height) * 100;
+
+    setZoomOrigin(`${x}% ${y}%`);
+  };
+
+  const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isZoomed) {
+      setIsZoomed(false);
+    } else {
+      updateZoomOrigin(e);
+      setIsZoomed(true);
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isZoomed) return;
+    updateZoomOrigin(e);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isZoomed) return;
+    updateZoomOrigin(e);
+  };
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={handleClose}>
@@ -103,15 +157,27 @@ export function ProductDetailModal({
 
           <div className='grid sm:grid-cols-2'>
             {/* Left — thumbnail */}
-            <div className='relative aspect-square w-full overflow-hidden bg-muted sm:aspect-auto'>
+            <div
+              className={cn(
+                "relative aspect-square w-full overflow-hidden bg-muted sm:aspect-auto select-none",
+                isZoomed ? "cursor-zoom-out" : "cursor-zoom-in",
+              )}
+              onClick={handleImageClick}
+              onMouseMove={handleMouseMove}
+              onTouchMove={handleTouchMove}
+            >
               <Image
                 src={product.thumbnails[imgIndex]}
                 alt={`${product.name} ${imgIndex + 1}`}
                 fill
-                className='object-cover'
+                className='object-contain transition-transform duration-200 pointer-events-none'
+                style={{
+                  transform: isZoomed ? "scale(2.2)" : "scale(1)",
+                  transformOrigin: zoomOrigin,
+                }}
                 sizes='400px'
               />
-              {product.thumbnails.length > 1 && (
+              {!isZoomed && product.thumbnails.length > 1 && (
                 <>
                   <button
                     onClick={prevImg}
@@ -131,7 +197,11 @@ export function ProductDetailModal({
                     {product.thumbnails.map((_, i) => (
                       <button
                         key={i}
-                        onClick={() => setImgIndex(i)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsZoomed(false);
+                          setImgIndex(i);
+                        }}
                         className={cn(
                           "h-1 transition-all",
                           i === imgIndex ? "w-6 bg-white" : "w-2 bg-white/40",
@@ -142,7 +212,7 @@ export function ProductDetailModal({
                 </>
               )}
               {product.badge && (
-                <div className='absolute left-0 top-0'>
+                <div className='absolute left-0 top-0 pointer-events-none'>
                   <span className='bg-(--accent) px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-white'>
                     {product.badge}
                   </span>

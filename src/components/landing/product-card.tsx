@@ -22,7 +22,7 @@ export function ProductCard({ product, onViewDetail }: ProductCardProps) {
           src={product.thumbnails[0]}
           alt={product.name}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-contain transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 640px) 50vw, 33vw"
         />
         {product.badge && (

@@ -41,17 +41,25 @@ export function FooterSection() {
           className="flex flex-wrap items-center justify-center gap-3 text-muted-foreground"
           aria-label="Metode pembayaran"
         >
-          {paymentMethods.map((pm) => (
-            <Image
-              key={pm.id}
-              alt={pm.label}
-              className="h-6 w-auto object-contain"
-              height={24}
-              src={pm.logoSrc}
-              unoptimized
-              width={96}
-            />
-          ))}
+          {paymentMethods.length === 0 ? (
+            <div className="flex gap-3 animate-pulse">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-6 w-12 bg-muted rounded-sm" />
+              ))}
+            </div>
+          ) : (
+            paymentMethods.map((pm) => (
+              <Image
+                key={pm.id}
+                alt={pm.label}
+                className="h-6 w-auto object-contain"
+                height={24}
+                src={pm.logoSrc}
+                unoptimized
+                width={96}
+              />
+            ))
+          )}
         </div>
       </div>
     </footer>
