@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, forwardRef } from "react";
+import { useState, useEffect, useRef, useCallback, forwardRef } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { toPng } from "html-to-image";
 import {
@@ -1109,8 +1109,15 @@ function InvoiceView({ adminWhatsapp }: { adminWhatsapp: string }) {
 
 // ── Root drawer ───────────────────────────────────────────────────────────────
 
-export function CartDrawer({ adminWhatsapp = "6289530571642" }: { adminWhatsapp?: string }) {
+export function CartDrawer() {
   const { isOpen, view, closeCart } = useCartStore();
+  const [adminWhatsapp, setAdminWhatsapp] = useState("6289530571642");
+
+  useEffect(() => {
+    fetch("/api/cms/settings")
+      .then((r) => r.json())
+      .then((data) => { if (data?.adminWhatsapp) setAdminWhatsapp(data.adminWhatsapp); });
+  }, []);
 
   return (
     <DialogPrimitive.Root

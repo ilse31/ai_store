@@ -1,9 +1,16 @@
-import { prisma } from "@/lib/prisma";
+"use client";
 
-export async function InfoSection() {
-  const specs = await prisma.specCell.findMany({
-    orderBy: { order: "asc" },
-  });
+import { useEffect, useState } from "react";
+import type { CmsSpecCell } from "@/types/cms";
+
+export function InfoSection() {
+  const [specs, setSpecs] = useState<CmsSpecCell[]>([]);
+
+  useEffect(() => {
+    fetch("/api/cms/specs")
+      .then((r) => r.json())
+      .then(setSpecs);
+  }, []);
 
   return (
     <section id="cara-beli" className="bg-background">

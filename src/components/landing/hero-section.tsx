@@ -1,18 +1,28 @@
-import { ArrowRight, Receipt } from "lucide-react";
-import { prisma } from "@/lib/prisma";
+"use client";
 
-export async function HeroSection() {
-  const hero = await prisma.heroContent.findFirst() ?? {
-    eyebrow: "Premium AI Tools",
-    headline1: "Terpercaya.",
-    headline2: "Proses Cepat.",
-    headline3: "Support Ramah.",
-    subcopy:
-      "Belanja produk digital dengan tampilan lebih rapi, harga jelas, dan alur checkout yang mudah seperti marketplace.",
-    alurText:
-      "checkout → invoice muncul → screenshot → konfirmasi WhatsApp admin",
-    ctaLabel: "Lihat Katalog",
-  };
+import { useEffect, useState } from "react";
+import { ArrowRight, Receipt } from "lucide-react";
+import type { CmsHeroContent } from "@/types/cms";
+
+const DEFAULTS: Omit<CmsHeroContent, "id"> = {
+  eyebrow: "Premium AI Tools",
+  headline1: "Terpercaya.",
+  headline2: "Proses Cepat.",
+  headline3: "Support Ramah.",
+  subcopy:
+    "Belanja produk digital dengan tampilan lebih rapi, harga jelas, dan alur checkout yang mudah seperti marketplace.",
+  alurText: "checkout → invoice muncul → screenshot → konfirmasi WhatsApp admin",
+  ctaLabel: "Lihat Katalog",
+};
+
+export function HeroSection() {
+  const [hero, setHero] = useState<Omit<CmsHeroContent, "id">>(DEFAULTS);
+
+  useEffect(() => {
+    fetch("/api/cms/hero")
+      .then((r) => r.json())
+      .then((data) => { if (data) setHero(data); });
+  }, []);
 
   return (
     <section id="hero" className="relative bg-background">

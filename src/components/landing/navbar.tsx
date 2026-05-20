@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useCartStore } from "@/store/cart-store";
@@ -10,8 +11,15 @@ const navLinks = [
   { label: "Katalog", href: "#katalog" },
 ];
 
-export function Navbar({ siteName = "AI STORE" }: { siteName?: string }) {
+export function Navbar() {
   const { items, openCart } = useCartStore();
+  const [siteName, setSiteName] = useState("AI STORE");
+
+  useEffect(() => {
+    fetch("/api/cms/settings")
+      .then((r) => r.json())
+      .then((data) => { if (data?.siteName) setSiteName(data.siteName); });
+  }, []);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
