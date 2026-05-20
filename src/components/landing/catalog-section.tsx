@@ -1,14 +1,17 @@
-import { prisma } from "@/lib/prisma";
-import { CatalogClient } from "./catalog-client";
+"use client";
 
-export async function CatalogSection() {
-  const products = await prisma.product.findMany({
-    orderBy: { order: "asc" },
-    include: {
-      thumbnails: { orderBy: { order: "asc" } },
-      variants: { orderBy: { order: "asc" } },
-    },
-  });
+import { useEffect, useState } from "react";
+import { CatalogClient } from "./catalog-client";
+import type { CmsProduct } from "@/types/cms";
+
+export function CatalogSection() {
+  const [products, setProducts] = useState<CmsProduct[]>([]);
+
+  useEffect(() => {
+    fetch("/api/cms/products")
+      .then((r) => r.json())
+      .then(setProducts);
+  }, []);
 
   return (
     <section id="katalog" className="bg-background py-16 sm:py-20">
