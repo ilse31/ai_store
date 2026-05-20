@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Plus, Edit2, X, Save } from "lucide-react";
+import { Loader2, Edit2, X, Save } from "lucide-react";
 import toast from "react-hot-toast";
+import { ImageUpload } from "@/components/admin/image-upload";
 
 type PaymentStep = { text: string; order: number };
 type PaymentMethod = {
@@ -86,14 +87,14 @@ export function PaymentsList() {
       <div className="flex justify-between items-end mb-6">
         <div>
           <h2 className="font-condensed text-2xl uppercase tracking-widest text-foreground">Metode Bayar</h2>
-          <p className="mt-1 text-xs font-light text-muted-foreground uppercase tracking-[0.1em]">Ubah rekening & QRIS</p>
+          <p className="mt-1 text-xs font-light text-muted-foreground uppercase tracking-widest">Ubah rekening & QRIS</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {methods.map((p) => (
           <div key={p.id} className="border border-border p-4 flex gap-4 bg-card items-center">
-            <div className="w-16 h-10 bg-white flex-shrink-0 flex items-center justify-center p-2">
+            <div className="w-16 h-10 bg-white shrink-0 flex items-center justify-center p-2">
               <img src={p.logoSrc} alt={p.label} className="max-w-full max-h-full object-contain" />
             </div>
             <div className="flex-1 min-w-0">
@@ -153,12 +154,27 @@ export function PaymentsList() {
               )}
 
               {formData.type === "qris" && (
-                <div>
-                  <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.15em] text-foreground">URL QRIS Image</label>
-                  <input type="text" value={formData.qrisImageSrc || ""} onChange={e => setFormData({...formData, qrisImageSrc: e.target.value})} className="h-10 w-full border border-border bg-transparent px-3 text-xs text-foreground focus:border-foreground focus:outline-none" placeholder="https://..." />
-                  {formData.qrisImageSrc && (
-                    <img src={formData.qrisImageSrc} alt="QRIS" className="mt-4 h-32 object-contain bg-white p-2" />
-                  )}
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-foreground">
+                    Gambar QRIS
+                  </label>
+                  <ImageUpload
+                    label="Upload QRIS Image"
+                    currentUrl={formData.qrisImageSrc ?? undefined}
+                    onUpload={(url) => setFormData({ ...formData, qrisImageSrc: url })}
+                  />
+                  <div>
+                    <label className="mb-1 block text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
+                      atau masukkan URL manual
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.qrisImageSrc || ""}
+                      onChange={e => setFormData({ ...formData, qrisImageSrc: e.target.value })}
+                      className="h-10 w-full border border-border bg-transparent px-3 text-xs text-foreground focus:border-foreground focus:outline-none"
+                      placeholder="https://..."
+                    />
+                  </div>
                 </div>
               )}
 

@@ -20,5 +20,7 @@ export interface Product {
   description: string;
   thumbnails: string[];  // 1–3 image URLs
   variants: PriceVariant[];  // 1–6 price options
+  sold: number;
+  rating: number;
   badge?: string;
 }

@@ -27,6 +27,7 @@
     "@radix-ui/react-toast": "^1.2.15",
     "aos": "^2.3.4",
     "axios": "^1.13.5",
+    "cloudinary": "^2.10.0",
     "clsx": "^2.1.1",
     "html-to-image": "^1.11.13",
     "immer": "^11.1.4",

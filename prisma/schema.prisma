@@ -45,6 +45,8 @@ model Product {
   badge       String?
   description String
   order       Int                @default(0)
+  sold        Int                @default(0)
+  rating      Float              @default(5.0)
   thumbnails  ProductThumbnail[]
   variants    ProductVariant[]
 }
