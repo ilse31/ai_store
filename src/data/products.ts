@@ -7,6 +7,8 @@ export const products: Product[] = [
     slug: "chatgpt-plus",
     category: "ai-assistant",
     badge: "Terlaris",
+    sold: 0,
+    rating: 5.0,
     description:
       "Akses ChatGPT-4o dengan kapasitas penuh. Tidak dibagi dengan pengguna lain. Cocok untuk produktivitas harian, coding, analisis dokumen, dan kreativitas. Proses aktivasi cepat, support 24 jam.",
     thumbnails: [
@@ -23,6 +25,8 @@ export const products: Product[] = [
     name: "Claude Pro Privat",
     slug: "claude-pro",
     category: "ai-assistant",
+    sold: 0,
+    rating: 5.0,
     description:
       "Claude 3.5 Sonnet & Claude 3 Opus dengan kuota diprioritaskan. Ideal untuk penulisan panjang, analisis mendalam, dan coding. Akun privat, tidak shared.",
     thumbnails: [
@@ -40,6 +44,8 @@ export const products: Product[] = [
     name: "Perplexity Pro",
     slug: "perplexity-pro",
     category: "ai-assistant",
+    sold: 0,
+    rating: 5.0,
     description:
       "Search AI terbaik dengan akses ke GPT-4 dan Claude. Cocok untuk riset, fact-checking, dan jawaban real-time dari internet. Unlimited Pro Search.",
     thumbnails: [
@@ -56,6 +62,8 @@ export const products: Product[] = [
     slug: "midjourney",
     category: "ai-image",
     badge: "Populer",
+    sold: 0,
+    rating: 5.0,
     description:
       "Buat gambar AI berkualitas tinggi dengan Midjourney. Tersedia dalam tiga paket sesuai kebutuhan. Cocok untuk desainer, konten kreator, dan seniman digital.",
     thumbnails: [
@@ -73,6 +81,8 @@ export const products: Product[] = [
     name: "Adobe Firefly Premium",
     slug: "adobe-firefly",
     category: "ai-image",
+    sold: 0,
+    rating: 5.0,
     description:
       "Generate gambar AI berkualitas komersial dengan Adobe Firefly. Terintegrasi dengan ekosistem Adobe. Aman digunakan untuk konten komersial.",
     thumbnails: [
@@ -89,6 +99,8 @@ export const products: Product[] = [
     name: "BlackBox AI Pro",
     slug: "blackbox-ai",
     category: "ai-coding",
+    sold: 0,
+    rating: 5.0,
     description:
       "AI coding assistant dengan autocomplete cerdas, code search, dan chat. Mendukung 20+ bahasa pemrograman. Tingkatkan produktivitas coding hingga 3x lebih cepat.",
     thumbnails: [
@@ -105,6 +117,8 @@ export const products: Product[] = [
     name: "GitHub Copilot",
     slug: "github-copilot",
     category: "ai-coding",
+    sold: 0,
+    rating: 5.0,
     description:
       "AI pair programmer dari GitHub. Autocomplete kode, generate fungsi dari komentar, dan chat AI langsung di VS Code. Mendukung semua bahasa populer.",
     thumbnails: [
@@ -122,6 +136,8 @@ export const products: Product[] = [
     slug: "notion-ai",
     category: "productivity",
     badge: "Baru",
+    sold: 0,
+    rating: 5.0,
     description:
       "Notion lengkap dengan AI terintegrasi. Draft tulisan, rangkum catatan, terjemahkan, dan analisis data langsung di workspace Notion kamu. Plus semua fitur Notion Pro.",
     thumbnails: [
@@ -139,6 +155,8 @@ export const products: Product[] = [
     name: "Canva Pro",
     slug: "canva-pro",
     category: "design",
+    sold: 0,
+    rating: 5.0,
     description:
       "Desain profesional dengan template premium, Magic AI, background remover, Brand Kit, dan 100+ juta aset. Akun privat tidak shared.",
     thumbnails: [
@@ -157,6 +175,8 @@ export const products: Product[] = [
     name: "Grammarly Premium",
     slug: "grammarly-premium",
     category: "writing",
+    sold: 0,
+    rating: 5.0,
     description:
       "Koreksi grammar, gaya penulisan, plagiarism checker, dan saran penulisan AI. Cocok untuk pelajar, profesional, dan konten kreator berbahasa Inggris.",
     thumbnails: [

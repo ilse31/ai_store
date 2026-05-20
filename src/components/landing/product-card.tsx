@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Star } from "lucide-react";
 import type { Product } from "@/types/product";
 
 interface ProductCardProps {
@@ -46,9 +47,10 @@ export function ProductCard({ product, onViewDetail }: ProductCardProps) {
         </h3>
 
         {/* Rating and Sold */}
-        <div className="mt-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+        <div className="mt-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
           <span className="flex items-center gap-1">
-            ⭐ {product.rating}
+            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+            {product.rating}
           </span>
           <span>•</span>
           <span>{product.sold} Terjual</span>

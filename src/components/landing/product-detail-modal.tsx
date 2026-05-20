@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Star } from "lucide-react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cart-store";
@@ -160,9 +160,10 @@ export function ProductDetailModal({
                   <h2 className='font-condensed text-2xl uppercase leading-tight text-foreground'>
                     {product.name}
                   </h2>
-                  <div className='mt-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground'>
+                  <div className='mt-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground'>
                     <span className='flex items-center gap-1'>
-                      ⭐ {product.rating}
+                      <Star className='h-3 w-3 fill-amber-400 text-amber-400' />
+                      {product.rating}
                     </span>
                     <span>•</span>
                     <span>{product.sold} Terjual</span>

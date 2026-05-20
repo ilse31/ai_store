@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Loader2, Plus, Edit2, Trash2, X, Save } from "lucide-react";
 import toast from "react-hot-toast";
+import { ImageUpload } from "@/components/admin/image-upload";
 
 type Variant = { label: string; price: number };
 type Thumbnail = { url: string; order: number };
@@ -33,8 +34,8 @@ export function ProductsList() {
   const [category, setCategory] = useState("semua");
   const [badge, setBadge] = useState("");
   const [description, setDescription] = useState("");
-  const [sold, setSold] = useState(0);
-  const [rating, setRating] = useState(5.0);
+  const [sold, setSold] = useState("");
+  const [rating, setRating] = useState("");
   const [thumbnails, setThumbnails] = useState<string[]>([]);
   const [variants, setVariants] = useState<Variant[]>([]);
 
@@ -59,8 +60,8 @@ export function ProductsList() {
     setCategory("semua");
     setBadge("");
     setDescription("");
-    setSold(0);
-    setRating(5.0);
+    setSold("");
+    setRating("");
     setThumbnails([]);
     setVariants([]);
   };
@@ -77,8 +78,8 @@ export function ProductsList() {
     setCategory(p.category);
     setBadge(p.badge || "");
     setDescription(p.description);
-    setSold(p.sold);
-    setRating(p.rating);
+    setSold(String(p.sold));
+    setRating(String(p.rating));
     setThumbnails(p.thumbnails.map(t => t.url));
     setVariants(p.variants.map(v => ({ label: v.label, price: v.price })));
     setIsModalOpen(true);
@@ -105,8 +106,8 @@ export function ProductsList() {
     const body = {
       name, slug, category, description,
       badge: badge || null,
-      sold,
-      rating,
+      sold: Number(sold) || 0,
+      rating: Number(rating) || 0,
       thumbnails,
       variants,
     };
@@ -139,7 +140,7 @@ export function ProductsList() {
       <div className="flex justify-between items-end mb-6">
         <div>
           <h2 className="font-condensed text-2xl uppercase tracking-widest text-foreground">Produk</h2>
-          <p className="mt-1 text-xs font-light text-muted-foreground uppercase tracking-[0.1em]">Kelola Katalog AI Store</p>
+          <p className="mt-1 text-xs font-light text-muted-foreground uppercase tracking-widest">Kelola Katalog AI Store</p>
         </div>
         <button onClick={openAdd} className="flex items-center gap-2 border border-foreground bg-foreground px-4 py-2 text-xs font-bold uppercase tracking-[0.15em] text-background transition-colors hover:bg-transparent hover:text-foreground">
           <Plus className="h-4 w-4" />
@@ -150,7 +151,7 @@ export function ProductsList() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {products.map((p) => (
           <div key={p.id} className="border border-border p-4 flex gap-4 bg-card">
-            <div className="w-20 h-20 bg-muted flex-shrink-0">
+            <div className="w-20 h-20 bg-muted shrink-0">
               {p.thumbnails[0] && <img src={p.thumbnails[0].url} alt={p.name} className="w-full h-full object-cover" />}
             </div>
             <div className="flex-1 min-w-0">
@@ -200,11 +201,32 @@ export function ProductsList() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.15em] text-foreground">Terjual</label>
-                  <input type="number" value={sold} onChange={e => setSold(Number(e.target.value))} className="h-10 w-full border border-border bg-transparent px-3 text-xs text-foreground focus:border-foreground focus:outline-none" required />
+                  <input type="text" inputMode="numeric" value={sold} onChange={e => setSold(e.target.value)} className="h-10 w-full border border-border bg-transparent px-3 text-xs text-foreground focus:border-foreground focus:outline-none" placeholder="0" required />
                 </div>
                 <div>
-                  <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.15em] text-foreground">Rating</label>
-                  <input type="number" step="0.1" min="0" max="5" value={rating} onChange={e => setRating(Number(e.target.value))} className="h-10 w-full border border-border bg-transparent px-3 text-xs text-foreground focus:border-foreground focus:outline-none" required />
+                  <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.15em] text-foreground">Rating (maks 5.0)</label>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={rating}
+                    onChange={e => {
+                      const raw = e.target.value.replace(",", ".");
+                      // Allow empty, digits, single dot/comma (while still typing)
+                      if (raw === "" || /^[0-9]*\.?[0-9]*$/.test(raw)) {
+                        const num = parseFloat(raw);
+                        if (!isNaN(num) && num > 5) return; // block > 5
+                        setRating(e.target.value); // store as-is (preserves comma)
+                      }
+                    }}
+                    onBlur={e => {
+                      // On blur: normalise — clamp to 5, strip trailing dot/comma
+                      const num = parseFloat(e.target.value.replace(",", "."));
+                      if (!isNaN(num)) setRating(String(Math.min(num, 5)));
+                    }}
+                    className="h-10 w-full border border-border bg-transparent px-3 text-xs text-foreground focus:border-foreground focus:outline-none"
+                    placeholder="5.0"
+                    required
+                  />
                 </div>
               </div>
 
@@ -216,18 +238,57 @@ export function ProductsList() {
               {/* Thumbnails */}
               <div className="border border-border p-4">
                 <div className="flex justify-between items-center mb-4">
-                  <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-foreground">Thumbnails (URLs)</label>
-                  <button type="button" onClick={() => setThumbnails([...thumbnails, ""])} className="text-[10px] text-foreground border border-border px-2 py-1">+ Tambah</button>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.15em] text-foreground">
+                    Thumbnails
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setThumbnails([...thumbnails, ""])}
+                    className="text-[10px] text-foreground border border-border px-2 py-1"
+                  >
+                    + Tambah
+                  </button>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-4">
                   {thumbnails.map((t, i) => (
-                    <div key={i} className="flex gap-2">
-                      <input type="text" value={t} onChange={e => {
-                        const nt = [...thumbnails];
-                        nt[i] = e.target.value;
-                        setThumbnails(nt);
-                      }} className="h-8 flex-1 border border-border bg-transparent px-3 text-xs text-foreground focus:border-foreground focus:outline-none" placeholder="https://..." required />
-                      <button type="button" onClick={() => setThumbnails(thumbnails.filter((_, idx) => idx !== i))} className="px-2 border border-border text-destructive">X</button>
+                    <div key={i} className="relative border border-border p-3 space-y-2">
+                      {/* Remove button */}
+                      <button
+                        type="button"
+                        onClick={() => setThumbnails(thumbnails.filter((_, idx) => idx !== i))}
+                        className="absolute right-2 top-2 p-0.5 border border-border text-destructive hover:bg-border"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+
+                      {/* Upload widget */}
+                      <ImageUpload
+                        label={`Upload Thumbnail ${i + 1}`}
+                        currentUrl={t || undefined}
+                        onUpload={(url) => {
+                          const nt = [...thumbnails];
+                          nt[i] = url;
+                          setThumbnails(nt);
+                        }}
+                      />
+
+                      {/* Manual URL fallback */}
+                      <div>
+                        <label className="mb-1 block text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
+                          atau masukkan URL manual
+                        </label>
+                        <input
+                          type="text"
+                          value={t}
+                          onChange={e => {
+                            const nt = [...thumbnails];
+                            nt[i] = e.target.value;
+                            setThumbnails(nt);
+                          }}
+                          className="h-8 w-full border border-border bg-transparent px-3 text-xs text-foreground focus:border-foreground focus:outline-none"
+                          placeholder="https://..."
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
