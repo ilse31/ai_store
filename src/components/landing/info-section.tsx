@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import AOS from "aos";
-import type { CmsSpecCell } from "@/types/cms";
+import type { CmsSpecCell, CmsSiteSettings } from "@/types/cms";
 
 function InfoSkeleton() {
   return (
@@ -27,9 +27,15 @@ function InfoSkeleton() {
 
 export function InfoSection() {
   const [specs, setSpecs] = useState<CmsSpecCell[]>([]);
+  const [siteName, setSiteName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    fetch("/api/cms/settings")
+      .then((r) => r.json())
+      .then((data: CmsSiteSettings) => {
+        if (data?.siteName) setSiteName(data.siteName);
+      });
     fetch("/api/cms/specs")
       .then((r) => r.json())
       .then((data) => {
@@ -56,7 +62,7 @@ export function InfoSection() {
           data-aos="fade-up"
           className="mb-10 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground"
         >
-          Mengapa AI Store
+          {siteName ? `Mengapa ${siteName}` : "Tentang Kami"}
         </p>
 
         {/* Spec cells */}

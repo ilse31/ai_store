@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { CatalogClient } from "./catalog-client";
 import AOS from "aos";
-import type { CmsProduct } from "@/types/cms";
+import type { CmsProduct, CmsSiteSettings } from "@/types/cms";
 
 function CatalogSkeleton() {
   return (
@@ -40,9 +40,15 @@ function CatalogSkeleton() {
 
 export function CatalogSection() {
   const [products, setProducts] = useState<CmsProduct[]>([]);
+  const [siteName, setSiteName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    fetch("/api/cms/settings")
+      .then((r) => r.json())
+      .then((data: CmsSiteSettings) => {
+        if (data?.siteName) setSiteName(data.siteName);
+      });
     fetch("/api/cms/products")
       .then((r) => r.json())
       .then((data) => {
@@ -67,11 +73,11 @@ export function CatalogSection() {
           className="mb-10 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between"
         >
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Katalog
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-(--accent)">
+              {siteName || "Katalog"}
             </p>
-            <h2 className="font-condensed text-4xl uppercase text-foreground sm:text-5xl">
-              AI Tools Premium
+            <h2 className="font-condensed text-4xl uppercase text-primary sm:text-5xl">
+              {siteName ? `Katalog ${siteName}` : "Katalog"}
             </h2>
           </div>
           <p className="max-w-xs text-sm font-light text-muted-foreground">

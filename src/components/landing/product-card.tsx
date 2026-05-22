@@ -13,7 +13,7 @@ export function ProductCard({ product, onViewDetail }: ProductCardProps) {
   return (
     <div
       data-aos="fade-up"
-      className="group flex cursor-pointer flex-col border border-border bg-card transition-colors hover:border-foreground"
+      className="group flex cursor-pointer flex-col border border-border bg-card transition-colors hover:border-primary"
       onClick={() => onViewDetail(product)}
     >
       {/* Thumbnail — full-bleed, no rounding */}

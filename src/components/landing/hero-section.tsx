@@ -88,13 +88,13 @@ export function HeroSection() {
           <h1
             data-aos="fade-up"
             data-aos-delay="100"
-            className="font-condensed text-[clamp(3.5rem,9vw,8rem)] uppercase leading-none tracking-tight text-foreground"
+            className="font-condensed text-[clamp(3.5rem,9vw,8rem)] uppercase leading-none tracking-tight text-primary"
           >
             {hero.headline1}
             <br />
             {hero.headline2}
             <br />
-            <span className="text-muted-foreground">{hero.headline3}</span>
+            <span className="text-(--accent)">{hero.headline3}</span>
           </h1>
 
           {/* Hairline divider */}
@@ -121,7 +121,7 @@ export function HeroSection() {
           <div data-aos="fade-up" data-aos-delay="400" className="mt-10">
             <a
               href="#katalog"
-              className="group inline-flex h-12 items-center gap-3 border border-foreground bg-transparent px-8 text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-all hover:bg-foreground hover:text-background"
+              className="group inline-flex h-12 items-center gap-3 border border-primary bg-transparent px-8 text-xs font-bold uppercase tracking-[0.15em] text-primary transition-all hover:bg-primary hover:text-primary-foreground"
             >
               {hero.ctaLabel}
               <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />

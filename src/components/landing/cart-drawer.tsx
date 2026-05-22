@@ -596,7 +596,7 @@ function CheckoutFormView() {
         <button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className='flex w-full items-center justify-center gap-2 border border-foreground bg-transparent py-3 text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:opacity-50'
+          className='flex w-full items-center justify-center gap-2 border border-primary bg-primary py-3 text-xs font-bold uppercase tracking-[0.15em] text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50'
         >
           {isSubmitting ? (
             <>
@@ -676,7 +676,7 @@ function CartView() {
           </span>
         </div>
         <button
-          className='w-full border border-foreground bg-transparent py-3 text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:bg-foreground hover:text-background disabled:cursor-not-allowed disabled:opacity-30'
+          className='w-full border border-primary bg-primary py-3 text-xs font-bold uppercase tracking-[0.15em] text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-30'
           disabled={items.length === 0}
           onClick={goToCheckout}
         >
@@ -1073,7 +1073,7 @@ function InvoiceView({ adminWhatsapp }: { adminWhatsapp: string }) {
           href={`https://wa.me/${adminWhatsapp}?text=${waMessage}`}
           target='_blank'
           rel='noopener noreferrer'
-          className='flex w-full items-center justify-center gap-2 border border-foreground bg-transparent py-3 text-xs font-bold uppercase tracking-[0.15em] text-foreground transition-colors hover:bg-foreground hover:text-background'
+          className='flex w-full items-center justify-center gap-2 border border-primary bg-primary py-3 text-xs font-bold uppercase tracking-[0.15em] text-primary-foreground transition-colors hover:bg-primary/90'
         >
           <MessageCircle className='h-5 w-5' />
           Konfirmasi via WhatsApp

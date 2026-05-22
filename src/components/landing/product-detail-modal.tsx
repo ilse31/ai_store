@@ -264,8 +264,8 @@ export function ProductDetailModal({
                     className={cn(
                       "border px-3 py-2 text-left text-xs transition-colors",
                       selectedVariant === i
-                        ? "border-foreground bg-foreground text-background"
-                        : "border-border bg-transparent text-foreground hover:border-foreground",
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-transparent text-foreground hover:border-primary",
                     )}
                   >
                     <span className='block font-semibold uppercase tracking-wider'>
@@ -281,7 +281,7 @@ export function ProductDetailModal({
               {/* CTA buttons */}
               <div className='mt-6 flex flex-col gap-2'>
                 <button
-                  className='w-full border border-foreground bg-foreground py-3 text-xs font-bold uppercase tracking-[0.15em] text-background transition-colors hover:bg-transparent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30'
+                  className='w-full border border-primary bg-primary py-3 text-xs font-bold uppercase tracking-[0.15em] text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-30'
                   disabled={selectedVariant === null}
                   onClick={handleDirectCheckout}
                 >

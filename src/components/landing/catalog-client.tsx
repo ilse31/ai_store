@@ -8,24 +8,13 @@ import { ProductDetailModal } from "./product-detail-modal";
 import type { CmsProduct } from "@/types/cms";
 import type { Product } from "@/types/product";
 
-type Category =
-  | "semua"
-  | "ai-assistant"
-  | "ai-image"
-  | "ai-coding"
-  | "productivity"
-  | "design"
-  | "writing";
-
-const CATEGORIES: { value: Category; label: string }[] = [
-  { value: "semua", label: "Semua Produk" },
-  { value: "ai-assistant", label: "AI Assistant" },
-  { value: "ai-image", label: "AI Image Generator" },
-  { value: "ai-coding", label: "AI Coding" },
-  { value: "productivity", label: "Productivity" },
-  { value: "design", label: "Design" },
-  { value: "writing", label: "Writing" },
-];
+/** Convert a slug like "ai-assistant" → "Ai Assistant" */
+function formatCategoryLabel(slug: string): string {
+  return slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
 
 // Map CmsProduct (Prisma shape) → Product (legacy type used by ProductCard/Modal)
 function toProduct(p: CmsProduct): Product {
@@ -49,9 +38,20 @@ interface CatalogClientProps {
 
 export function CatalogClient({ products }: CatalogClientProps) {
   const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<Category>("semua");
+  const [activeCategory, setActiveCategory] = useState("semua");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Derive categories from product data
+  const categories = useMemo(() => {
+    const uniqueSlugs = Array.from(
+      new Set(products.map((p) => p.category))
+    );
+    return [
+      { value: "semua", label: "Semua Produk" },
+      ...uniqueSlugs.map((slug) => ({ value: slug, label: formatCategoryLabel(slug) })),
+    ];
+  }, [products]);
 
   const filtered = useMemo(
     () =>
@@ -84,22 +84,22 @@ export function CatalogClient({ products }: CatalogClientProps) {
             placeholder="CARI PRODUK..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-10 w-full border border-border bg-transparent pl-9 pr-4 text-xs font-semibold uppercase tracking-widest text-foreground placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
+            className="h-10 w-full border border-border bg-transparent pl-9 pr-4 text-xs font-semibold uppercase tracking-widest text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
           />
         </div>
       </div>
 
       {/* Category tabs */}
       <div className="mb-10 flex flex-wrap gap-2">
-        {CATEGORIES.map((cat) => (
+        {categories.map((cat: { value: string; label: string }) => (
           <button
             key={cat.value}
             onClick={() => setActiveCategory(cat.value)}
             className={cn(
               "border px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] transition-colors",
               activeCategory === cat.value
-                ? "border-foreground bg-foreground text-background"
-                : "border-border bg-transparent text-muted-foreground hover:border-foreground hover:text-foreground"
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-transparent text-muted-foreground hover:border-primary hover:text-primary"
             )}
           >
             {cat.label}
