@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/toaster";
 import { AosInit } from "@/components/aos-init";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const barlow = Barlow({
   variable: "--font-barlow",
@@ -137,6 +138,7 @@ export default function RootLayout({
           <AosInit />
           {children}
           <Toaster />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
